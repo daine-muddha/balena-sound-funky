@@ -1,0 +1,19 @@
+FROM balenalib/raspberrypi4-64-debian-python:latest
+
+WORKDIR /usr/src/app
+
+RUN apt update
+RUN apt install build-essential
+RUN install_packages git
+
+COPY rbp_webserver/requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY rbp_webserver/ ./
+
+COPY . .
+
+# Enable udevd so that plugged dynamic hardware devices show up in our container.
+ENV UDEV=1
+
+CMD ["python", "rbp_webserver/rbp_webserver.py"]

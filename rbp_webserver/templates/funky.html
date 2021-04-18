@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+{% extends "base.html" %}
+
+{% block title %}Funksteckdosen{% endblock %}
+{% block pageTitle %}<h4>Funksteckdosen</h4>{% endblock %}
+{% block content %}
+<div class="container">
+    {% for category in categories %}
+        <div class="row mt-3">
+        	<div class="col">
+            	<h4>{{ category.name }}</h4>
+            </div>
+        </div>
+        {% for sock in category.sockets %}
+            <div class="row">
+                <div class="col-6 col-sm-4">
+                    <p>{{ sock.name }}:</p>
+                </div>
+                <div class="col-6 col-sm-4">
+                    <button type="button" class="btn btn-success btn-socket" id="{{ sock.remote }}+{{ sock.socket }}+on" href="#">On</button>
+                    <button type="button" class="btn btn-danger btn-socket" id="{{ sock.remote }}+{{ sock.socket }}+off" href="#">Off</button>
+                </div>
+            </div>
+        {% endfor %}
+        {% if not loop.last %}
+        <div class="line mt-2 mb-2"></div>
+        {% endif %}
+    {% endfor %}
+</div>
+
+{% endblock %}
+
+{% block extrajs %}
+<script>
+    $(document).ready(function () {
+        $('.btn-socket').click(function() {
+            var btnID = $(this).attr('id');
+            $.post("/funky", {'btn_id':btnID});
+        })
+    })
+</script>
+{% endblock %}

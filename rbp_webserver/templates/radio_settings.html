@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+{% extends "base.html" %}
+
+{% block title %}Radiosender{% endblock %}
+{% block pageTitle %}<h4>Einstellungen</h4>{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h4>Radiosender</h4>
+        </div>
+    </div>
+    {% for form in forms %}
+    <form action="" method="post" class="settingsForm mt-3">
+        {{ form.hidden_tag() }}
+        <div class="form-row">
+            <div class="form-group col-12 col-md-4">
+                {{ form.name.label }}:
+                {{ form.name(class="form-control") }}
+            </div>
+            <div class="form-group col-12 col-md-8">
+                {{ form.url.label }}:
+                {{ form.url(class="form-control") }}
+            </div>
+        </div>
+    </form>
+    {% endfor %}
+    <div class="row btn-row mt-3">
+        <div class="col">
+            <button id="addButton" class="btn btn-outline-dark" type="button">Hinzufügen</button>
+            <button id="submitButton" class="btn btn-dark" type="button">Speichern</button>
+        </div>
+    </div>
+</div>    
+{% endblock %}
+
+{% block extrajs %}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#submitButton").click(function(){
+            var formData= '';
+            $("form").each(function() {
+                formData+=$(this).serialize();
+                formData+='&formbreak&';
+            })
+            $.post("/settings/radio", {"form_data": formData});
+            window.location = "/";
+        });
+        $('#addButton').click(function() {
+            $.post( "/settings/radio", {"add_form": true}, function( data ) {
+                $( ".btn-row" ).before( data );
+            });
+        });
+    })
+</script>
+{% endblock %}
