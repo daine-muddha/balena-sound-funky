@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+{% block pageTitle %}<h4>Home</h4>{% endblock %}
+{% block content %}
+<div class="container">
+    {% for category in categories %}
+        <div class="row mt-3">
+        	<div class="col">
+            	<h4>{{ category.name }}</h4>
+            </div>
+        </div>
+        {% for sock in category.sockets %}
+            <div class="row">
+                <div class="col-6 col-sm-4">
+                    <p>{{ sock.name }}:</p>
+                </div>
+                <div class="col-6 col-sm-4">
+                    <button type="button" class="btn btn-success btn-socket" id="{{ sock.remote }}+{{ sock.socket }}+on" href="#">On</button>
+                    <button type="button" class="btn btn-danger btn-socket" id="{{ sock.remote }}+{{ sock.socket }}+off" href="#">Off</button>
+                </div>
+            </div>
+        {% endfor %}
+        <div class="line mt-2 mb-2"></div>
+    {% endfor %}
+    <div class="row mt-3">
+        <div class="col">
+            <h4>Radio</h4>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <p>Lautstärke</p>
+            <div class="d-flex justify-content-left my-4">
+              <div class="w-75">
+                {% if volume == 'Error' %}
+                <input type="range" class="custom-range" id="volumeRange" min="0" max="100" value="{{ volume }}" disabled>
+                <p>Fehler beim Laden der Lautstärke</p>
+                {% else %}
+                <input type="range" class="custom-range" id="volumeRange" min="0" max="100" value="{{ volume }}">
+                {% endif %}
+              </div>
+              <span class="font-weight-bold text-dark ml-2 valueSpan2"></span>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+          <div class="form-group">
+            <select id="radioSelectionForm" class="form-control">
+              {% for option in radio_station_form.radio %}
+                {{ option(action= url_list[loop.index0]) }}
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="row mt-1">
+        <div class="col">
+          <button class="btn btn-success mr-2" type="button" id="radioPlayBtn">Play</button>
+          <button class="btn btn-danger" type="button" id="radioStopBtn">Stop</button>
+        </div>
+      </div>
+</div>
+
+{% endblock %}
+
+{% block extrajs %}
+<script>
+    $(document).ready(function () {
+        const $valueSpan = $('.valueSpan2');
+        const $value = $('#volumeRange');
+        $valueSpan.html($value.val());
+        $value.on('input change', () => {
+
+            $valueSpan.html($value.val());
+        });
+        $value.change(function() {
+            $.post("/", {"volume": $(this).val()});
+        })
+        $('.btn-socket').click(function() {
+            var btnID = $(this).attr('id');
+            $.post("/", {'btn_id':btnID});
+        })
+        $('#radioPlayBtn').click(function() {
+            $.post("/", {"radio_play": $('#radioSelectionForm option:selected').attr('action')});
+        });
+        $('#radioStopBtn').click(function() {
+            $.post("/", {"radio_stop": true});
+        });
+    })
+</script>
+{% endblock %}

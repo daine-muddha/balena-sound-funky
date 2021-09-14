@@ -131,7 +131,7 @@ def radio_settings():
             data = render_template('radio_settings_form.html', form=form)
             return data
 
-"""
+
 @app.route('/music', methods=['GET', 'POST'])
 def music():
     min_volume=0
@@ -141,6 +141,7 @@ def music():
     pcm_output_card = 'pcm.output {\n\ttype hw\n\tcard 0\n}'
     ctl_default_card = 'ctl.!default {\n\ttype hw\n\tcard 0\n}'
     if request.method == 'GET':
+        """
         #get audio output
         process = subprocess.Popen(['amixer', 'cget', 'numid=3'], stdout=subprocess.PIPE)
         stdout = process.communicate()[0].decode('utf-8')
@@ -196,11 +197,11 @@ def music():
             volume = int(volume_str[volume_start_ind:volume_end_ind])
         except:
             volume = 'Error'
+        """
         #get radio stations
         with open(Data.url) as file:
             data = json.load(file)
         radios = data.get('radios', None)
-
         if radios is not None:
             name_list = list()
             url_list = list()
@@ -211,8 +212,9 @@ def music():
             radio_station_form.radio.choices = [(x.lower(), x) for x in name_list]
 
 
-        return render_template('music.html', volume=volume, audio_output_form=audio_output_form, radio_station_form=radio_station_form, url_list=url_list, bt_cons=bt_cons)
+        return render_template('music.html', volume='Error', audio_output_form=AudioOutputForm(audio_output=''), radio_station_form=radio_station_form, url_list=url_list, bt_cons=list())
     elif request.method == 'POST':
+        """
         volume = request.form.get('volume', None)
         audio_output = request.form.get('audio_output', None)
         if volume is not None:
@@ -276,7 +278,7 @@ def music():
                     return 'OK'
                 except:
                     return 'Not OK'
-
+            """
         radio_play = request.form.get('radio_play', None)
         if radio_play is not None:
             try:
@@ -293,7 +295,7 @@ def music():
                 return 'OK'
             except:
                 return 'Not OK'
-"""
+
 @app.route('/settings/power', methods=['GET', 'POST'])
 def raspbi_power():
     if request.method == 'GET':
